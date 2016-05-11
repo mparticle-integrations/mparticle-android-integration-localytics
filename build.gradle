@@ -1,6 +1,15 @@
-ext {
-    kitDescription = 'Localytics Kit for the mParticle SDK'
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.mparticle:android-kit-plugin:+'
+    }
 }
 
-apply from: '../../scripts/kit-common.gradle'
-apply from: '../../scripts/maven.gradle'
+apply plugin: 'com.mparticle.kit'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
