@@ -1,10 +1,8 @@
 package com.mparticle.kits;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.localytics.android.Localytics;
@@ -28,7 +26,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
     private static final String API_KEY = "appKey";
@@ -218,8 +215,8 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     }
 
     @Override
-    public boolean willHandlePushMessage(Set<String> keyset) {
-        return keyset.contains("ll");
+    public boolean willHandlePushMessage(Intent intent) {
+        return intent.getExtras().containsKey("ll");
     }
 
     @Override
