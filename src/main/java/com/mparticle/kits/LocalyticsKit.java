@@ -48,7 +48,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
         try {
             customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
-        } catch (JSONException jse) {
+        } catch (Exception jse) {
 
         }
         trackAsRawLtv = Boolean.parseBoolean(getSettings().get(RAW_LTV));
