@@ -1,8 +1,10 @@
 package com.mparticle.kits;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.localytics.android.Localytics;
@@ -27,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
+public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener, KitIntegration.ActivityListener{
     private static final String API_KEY = "appKey";
     private static final String CUSTOM_DIMENSIONS = "customDimensions";
     private static final String RAW_LTV = "trackClvAsRawValue";
@@ -228,5 +230,47 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     public boolean onPushRegistration(String token, String senderId) {
         Localytics.setPushRegistrationId(token);
         return true;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityCreated(Activity activity, Bundle bundle) {
+        callbacks.onActivityCreated(activity, bundle);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityStarted(Activity activity) {
+        callbacks.onActivityStarted(activity);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityResumed(Activity activity) {
+        callbacks.onActivityResumed(activity);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityPaused(Activity activity) {
+        callbacks.onActivityPaused(activity);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityStopped(Activity activity) {
+        callbacks.onActivityStopped(activity);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+        callbacks.onActivitySaveInstanceState(activity, bundle);
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityDestroyed(Activity activity) {
+        callbacks.onActivityDestroyed(activity);
+        return null;
     }
 }
