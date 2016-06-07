@@ -130,8 +130,29 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     }
 
     @Override
-    public void removeUserAttribute(String key) {
+    public void setUserAttributeList(String key, List<String> list) {
+        String[] array = list.toArray(new String[list.size()]);
+        Localytics.setProfileAttribute(key, array);
+    }
 
+    @Override
+    public boolean supportsAttributeLists() {
+        return true;
+    }
+
+    @Override
+    public void setAllUserAttributes(Map<String, String> attributes, Map<String, List<String>> attributeLists) {
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            setUserAttribute(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, List<String>> entry : attributeLists.entrySet()) {
+            setUserAttributeList(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void removeUserAttribute(String key) {
+        Localytics.deleteProfileAttribute(key);
     }
 
     @Override
