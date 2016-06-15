@@ -1,1 +1,8 @@
-<manifest package="com.mparticle.kits.localytics"/>
+<manifest package="com.mparticle.kits.localytics" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+            android:name="com.localytics.android.GcmListenerService"
+            android:exported="false"/>
+        <activity android:name="com.localytics.android.PushTrackingActivity"/>
+    </application>
+</manifest>

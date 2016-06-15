@@ -7,9 +7,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.localytics.android.GcmListenerService;
 import com.localytics.android.Localytics;
 import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
-import com.localytics.android.PushReceiver;
 import com.localytics.android.ReferralReceiver;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
@@ -17,9 +17,8 @@ import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Product;
 import com.mparticle.internal.CommerceEventUtil;
 import com.mparticle.internal.ConfigManager;
-
+import com.mparticle.internal.MPUtility;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -54,6 +53,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
         }
         trackAsRawLtv = Boolean.parseBoolean(getSettings().get(RAW_LTV));
+        Localytics.setLoggingEnabled(MParticle.getInstance().getEnvironment() == MParticle.Environment.Development);
         return null;
     }
 
@@ -239,12 +239,17 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
     @Override
     public boolean willHandlePushMessage(Intent intent) {
-        return intent.getExtras().containsKey("ll");
+        return intent.getExtras().containsKey("ll") &&
+                MPUtility.isInstanceIdAvailable() &&
+                KitUtils.isServiceAvailable(getContext(), GcmListenerService.class);
     }
 
     @Override
     public void onPushMessageReceived(Context context, Intent extras) {
-        new PushReceiver().onReceive(context, extras);
+        Intent service = new Intent(context, com.localytics.android.GcmListenerService.class);
+        service.setAction("com.google.android.c2dm.intent.RECEIVE");
+        service.putExtras(extras);
+        context.startService(service);
     }
 
     @Override
