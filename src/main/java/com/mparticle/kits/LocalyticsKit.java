@@ -15,7 +15,6 @@ import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Product;
-import com.mparticle.internal.CommerceEventUtil;
 import com.mparticle.internal.ConfigManager;
 import com.mparticle.internal.MPUtility;
 import org.json.JSONArray;
@@ -103,7 +102,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
                     JSONObject dimension = customDimensionJson.getJSONObject(i);
                     if (dimension.getString("maptype").equals("UserAttributeClass.Name")) {
                         String attributeName = dimension.getString("map");
-                        if (!TextUtils.isEmpty(value)) {
+                        if (!KitUtils.isEmpty(value)) {
                             if (attributeKeys == null) {
                                 attributeKeys = new HashSet<String>();
                             }
@@ -209,11 +208,11 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     @Override
     public List<ReportingMessage> logEvent(CommerceEvent event) {
         List<ReportingMessage> messages = new LinkedList<ReportingMessage>();
-        if (!TextUtils.isEmpty(event.getProductAction()) && (
+        if (!KitUtils.isEmpty(event.getProductAction()) && (
                 event.getProductAction().equalsIgnoreCase(Product.PURCHASE)) ||
                 event.getProductAction().equalsIgnoreCase(Product.REFUND)) {
             Map<String, String> eventAttributes = new HashMap<String, String>();
-            CommerceEventUtil.extractActionAttributes(event, eventAttributes);
+            CommerceEventUtils.extractActionAttributes(event, eventAttributes);
             int multiplier = trackAsRawLtv ? 1 : 100;
             if (event.getProductAction().equalsIgnoreCase(Product.REFUND)) {
                 multiplier *= -1;
@@ -223,7 +222,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
             messages.add(ReportingMessage.fromEvent(this, event));
             return messages;
         }
-        List<MPEvent> eventList = CommerceEventUtil.expand(event);
+        List<MPEvent> eventList = CommerceEventUtils.expand(event);
         if (eventList != null) {
             for (int i = 0; i < eventList.size(); i++) {
                 try {
