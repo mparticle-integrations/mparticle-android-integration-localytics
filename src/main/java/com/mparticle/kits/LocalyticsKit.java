@@ -14,7 +14,7 @@ import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Product;
 import com.mparticle.internal.ConfigManager;
 import com.mparticle.internal.MPUtility;
-
+import com.mparticle.internal.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -109,7 +109,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
                     }
                 }
             } catch (Exception e) {
-                ConfigManager.log(MParticle.LogLevel.DEBUG, "Exception while mapping mParticle user attributes to Localytics custom dimensions: " + e.toString());
+                Logger.debug("Exception while mapping mParticle user attributes to Localytics custom dimensions: " + e.toString());
             }
         }
         return -1;
@@ -231,7 +231,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
                     logEvent(eventList.get(i));
                     messages.add(ReportingMessage.fromEvent(this, event));
                 } catch (Exception e) {
-                    ConfigManager.log(MParticle.LogLevel.WARNING, "Failed to call tagEvent to Localytics kit: " + e.toString());
+                    Logger.warning("Failed to call tagEvent to Localytics kit: " + e.toString());
                 }
             }
         }
