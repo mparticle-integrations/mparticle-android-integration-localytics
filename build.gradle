@@ -10,6 +10,12 @@ buildscript {
 
 apply plugin: 'com.mparticle.kit'
 
+android {
+    defaultConfig {
+        minSdkVersion 14
+    }
+}
+
 dependencies {
     compile files('libs/localytics400.jar')
     testCompile  files('libs/java-json.jar')

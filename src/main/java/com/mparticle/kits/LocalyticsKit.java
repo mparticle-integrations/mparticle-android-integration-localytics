@@ -1,15 +1,12 @@
 package com.mparticle.kits;
 
-import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.localytics.android.GcmListenerService;
 import com.localytics.android.Localytics;
-import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
 import com.localytics.android.ReferralReceiver;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
@@ -17,24 +14,25 @@ import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Product;
 import com.mparticle.internal.ConfigManager;
 import com.mparticle.internal.MPUtility;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 
-public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener, KitIntegration.ActivityListener{
+
+public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
     static final String API_KEY = "appKey";
     static final String CUSTOM_DIMENSIONS = "customDimensions";
-    static final String RAW_LTV = "trackClvAsRawValue";
+    private static final String RAW_LTV = "trackClvAsRawValue";
+
     private JSONArray customDimensionJson = null;
     private boolean trackAsRawLtv = false;
-    private LocalyticsActivityLifecycleCallbacks callbacks;
 
     @Override
     public String getName() {
@@ -43,10 +41,13 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
     @Override
     protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
-        if (callbacks == null) {
-            callbacks = new LocalyticsActivityLifecycleCallbacks(getContext(), getSettings().get(API_KEY));
+        try {
+            customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
+        } catch (Exception jse) {
+
         }
         trackAsRawLtv = Boolean.parseBoolean(getSettings().get(RAW_LTV));
+        Localytics.autoIntegrate((Application)context.getApplicationContext(), getSettings().get(API_KEY));
         Localytics.setLoggingEnabled(MParticle.getInstance().getEnvironment() == MParticle.Environment.Development);
         return null;
     }
@@ -257,47 +258,5 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     public boolean onPushRegistration(String token, String senderId) {
         Localytics.setPushRegistrationId(token);
         return true;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityCreated(Activity activity, Bundle bundle) {
-        callbacks.onActivityCreated(activity, bundle);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityStarted(Activity activity) {
-        callbacks.onActivityStarted(activity);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityResumed(Activity activity) {
-        callbacks.onActivityResumed(activity);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityPaused(Activity activity) {
-        callbacks.onActivityPaused(activity);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityStopped(Activity activity) {
-        callbacks.onActivityStopped(activity);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-        callbacks.onActivitySaveInstanceState(activity, bundle);
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityDestroyed(Activity activity) {
-        callbacks.onActivityDestroyed(activity);
-        return null;
     }
 }
