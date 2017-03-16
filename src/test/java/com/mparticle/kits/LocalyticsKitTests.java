@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -55,4 +56,23 @@ public class LocalyticsKitTests {
         }
         fail(className + " not found as a known integration.");
     }
+
+    @Test
+    public void testGetCustomDimensionIndex() throws Exception {
+        LocalyticsKit kit = (LocalyticsKit) getKit();
+        Map<String, String> settings = new HashMap<>();
+        kit.setConfiguration(Mockito.mock(KitConfiguration.class));
+        settings.put(LocalyticsKit.API_KEY, "test");
+        settings.put(LocalyticsKit.CUSTOM_DIMENSIONS, "[ { \"maptype\":\"UserAttributeClass.Name\", \"value\":\"Dimension 0\", \"map\":\"foo-key-0\" }, { \"maptype\":\"UserAttributeClass.Name\", \"value\":\"Dimension 1\", \"map\":\"foo-key-1\" }, ]");
+        Mockito.when(kit.getSettings()).thenReturn(settings);
+        int index = kit.getDimensionIndexForAttribute(null);
+        assertEquals(-1, index);
+        index = kit.getDimensionIndexForAttribute("foo-key-0");
+        assertEquals(0, index);
+        index = kit.getDimensionIndexForAttribute("fOo-Key-0");
+        assertEquals(0, index);
+        index = kit.getDimensionIndexForAttribute("fOo-Key-1");
+        assertEquals(1, index);
+    }
+
 }

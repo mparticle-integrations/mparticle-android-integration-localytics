@@ -12,4 +12,5 @@ apply plugin: 'com.mparticle.kit'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile  files('libs/java-json.jar')
 }

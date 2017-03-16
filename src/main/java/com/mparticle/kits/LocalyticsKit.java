@@ -27,10 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+
 public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener, KitIntegration.ActivityListener{
-    private static final String API_KEY = "appKey";
-    private static final String CUSTOM_DIMENSIONS = "customDimensions";
-    private static final String RAW_LTV = "trackClvAsRawValue";
+    static final String API_KEY = "appKey";
+    static final String CUSTOM_DIMENSIONS = "customDimensions";
+    static final String RAW_LTV = "trackClvAsRawValue";
     private JSONArray customDimensionJson = null;
     private boolean trackAsRawLtv = false;
     private LocalyticsActivityLifecycleCallbacks callbacks;
@@ -44,12 +45,6 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
         if (callbacks == null) {
             callbacks = new LocalyticsActivityLifecycleCallbacks(getContext(), getSettings().get(API_KEY));
-        }
-
-        try {
-            customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
-        } catch (Exception jse) {
-
         }
         trackAsRawLtv = Boolean.parseBoolean(getSettings().get(RAW_LTV));
         Localytics.setLoggingEnabled(MParticle.getInstance().getEnvironment() == MParticle.Environment.Development);
@@ -93,22 +88,22 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         return null;
     }
 
-    @Override
-    public void setUserAttribute(String key, String value) {
-        HashSet<String> attributeKeys = null;
+    int getDimensionIndexForAttribute(String key) {
+        if (customDimensionJson == null) {
+            try {
+                customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
+            } catch (Exception jse) {
+
+            }
+        }
         if (customDimensionJson != null) {
             try {
                 for (int i = 0; i < customDimensionJson.length(); i++) {
                     JSONObject dimension = customDimensionJson.getJSONObject(i);
                     if (dimension.getString("maptype").equals("UserAttributeClass.Name")) {
                         String attributeName = dimension.getString("map");
-                        if (!KitUtils.isEmpty(value)) {
-                            if (attributeKeys == null) {
-                                attributeKeys = new HashSet<String>();
-                            }
-                            attributeKeys.add(attributeName);
-                            int dimensionIndex = Integer.parseInt(dimension.getString("value").substring("Dimension ".length()));
-                            Localytics.setCustomDimension(dimensionIndex, value);
+                        if (key.equalsIgnoreCase(attributeName)) {
+                            return Integer.parseInt(dimension.getString("value").substring("Dimension ".length()));
                         }
                     }
                 }
@@ -116,8 +111,15 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
                 ConfigManager.log(MParticle.LogLevel.DEBUG, "Exception while mapping mParticle user attributes to Localytics custom dimensions: " + e.toString());
             }
         }
+        return -1;
+    }
 
-        if (attributeKeys == null || !attributeKeys.contains(key)) {
+    @Override
+    public void setUserAttribute(String key, String value) {
+        int dimensionIndex = getDimensionIndexForAttribute(key);
+        if (dimensionIndex >= 0) {
+            Localytics.setCustomDimension(dimensionIndex, value);
+        } else {
             if (key.equalsIgnoreCase(MParticle.UserAttributes.FIRSTNAME)) {
                 Localytics.setCustomerFirstName(value);
             } else if (key.equalsIgnoreCase(MParticle.UserAttributes.LASTNAME)) {
