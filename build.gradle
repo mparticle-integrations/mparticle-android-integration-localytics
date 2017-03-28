@@ -11,6 +11,6 @@ buildscript {
 apply plugin: 'com.mparticle.kit'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('libs/localytics400.jar')
     testCompile  files('libs/java-json.jar')
 }
