@@ -120,14 +120,13 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         int dimensionIndex = getDimensionIndexForAttribute(key);
         if (dimensionIndex >= 0) {
             Localytics.setCustomDimension(dimensionIndex, value);
+        }
+        if (key.equalsIgnoreCase(MParticle.UserAttributes.FIRSTNAME)) {
+            Localytics.setCustomerFirstName(value);
+        } else if (key.equalsIgnoreCase(MParticle.UserAttributes.LASTNAME)) {
+            Localytics.setCustomerLastName(value);
         } else {
-            if (key.equalsIgnoreCase(MParticle.UserAttributes.FIRSTNAME)) {
-                Localytics.setCustomerFirstName(value);
-            } else if (key.equalsIgnoreCase(MParticle.UserAttributes.LASTNAME)) {
-                Localytics.setCustomerLastName(value);
-            } else {
-                Localytics.setProfileAttribute(KitUtils.sanitizeAttributeKey(key), value);
-            }
+            Localytics.setProfileAttribute(KitUtils.sanitizeAttributeKey(key), value);
         }
     }
 
