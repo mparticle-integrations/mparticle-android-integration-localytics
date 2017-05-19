@@ -16,7 +16,15 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url 'http://maven.localytics.com/public'
+    }
+}
+
 dependencies {
-    compile files('libs/localytics400.jar')
+    compile 'com.localytics.android:library:4.3.1'
     testCompile  files('libs/java-json.jar')
+
+    provided 'com.google.android.gms:play-services-gcm:[7.0,)'
 }
