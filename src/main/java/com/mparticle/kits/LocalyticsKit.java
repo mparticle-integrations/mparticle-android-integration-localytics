@@ -220,7 +220,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
                 multiplier *= -1;
             }
             double total = event.getTransactionAttributes().getRevenue() * multiplier;
-            Localytics.tagEvent(String.format("eCommerce - %s", event.getProductAction(), eventAttributes, (long) total));
+            Localytics.tagEvent(String.format("eCommerce - %s", event.getProductAction()), eventAttributes, (long) total);
             messages.add(ReportingMessage.fromEvent(this, event));
             return messages;
         }
