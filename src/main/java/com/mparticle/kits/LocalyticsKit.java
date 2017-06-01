@@ -181,7 +181,17 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
     @Override
     public List<ReportingMessage> logEvent(MPEvent event) {
-        Localytics.tagEvent(event.getEventName(), event.getInfo());
+        Double duration = event.getLength();
+        Map<String, String> info = event.getInfo();
+
+        if (duration != null) {
+            if (info == null) {
+                info = new HashMap<String, String>();
+            }
+            info.put("event_duration", Double.toString(duration));
+        }
+
+        Localytics.tagEvent(event.getEventName(), info);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
         messageList.add(ReportingMessage.fromEvent(this, event));
         return messageList;
