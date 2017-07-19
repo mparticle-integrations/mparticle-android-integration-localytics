@@ -4,7 +4,16 @@ This repository contains the [Localytics](https://www.localytics.com) integratio
 
 ### Adding the integration
 
-1. Add the kit dependency to your app's build.gradle:
+1. The Appboy Kit requires that you add Appboy's Maven server to your buildscript:
+
+    ```
+    repositories {
+        maven { url 'http://maven.localytics.com/public' }
+        ...
+    }
+    ```
+
+2. Add the kit dependency to your app's build.gradle:
 
     ```groovy
     dependencies {
