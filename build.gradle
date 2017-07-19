@@ -15,8 +15,11 @@ android {
         minSdkVersion 14
     }
 }
+repositories {
+    maven { url 'http://maven.localytics.com/public' }
+}
 
 dependencies {
-    compile files('libs/localytics400.jar')
+    compile 'com.localytics.android:library:4.4.0'
     testCompile  files('libs/java-json.jar')
 }
