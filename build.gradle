@@ -20,6 +20,6 @@ repositories {
 }
 
 dependencies {
-    compile 'com.localytics.android:library:4.4.0'
+    compile 'com.localytics.android:library:4.4.1'
     testCompile  files('libs/java-json.jar')
 }
