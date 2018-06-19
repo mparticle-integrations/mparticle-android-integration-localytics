@@ -15,6 +15,9 @@ import com.mparticle.commerce.Product;
 import com.mparticle.internal.ConfigManager;
 import com.mparticle.internal.MPUtility;
 import com.mparticle.internal.Logger;
+import com.mparticle.kits_core.KitIntegration;
+import com.mparticle.kits_core.ReportingMessage;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,7 +29,7 @@ import java.util.Map;
 
 
 
-public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
+public class LocalyticsKit extends AbstractKitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
     static final String API_KEY = "appKey";
     static final String CUSTOM_DIMENSIONS = "customDimensions";
     private static final String RAW_LTV = "trackClvAsRawValue";
@@ -40,7 +43,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     }
 
     @Override
-    protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
+    public List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
         try {
             customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
         } catch (Exception jse) {
@@ -160,7 +163,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     public List<ReportingMessage> setOptOut(boolean optOutStatus) {
         Localytics.setOptedOut(optOutStatus);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(new ReportingMessage(this, ReportingMessage.MessageType.OPT_OUT, System.currentTimeMillis(), null));
+        messageList.add(new ReportingMessageImpl(this, ReportingMessageImpl.MessageType.OPT_OUT, System.currentTimeMillis(), null));
         return messageList;
     }
 
@@ -193,7 +196,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
         Localytics.tagEvent(event.getEventName(), info);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(ReportingMessage.fromEvent(this, event));
+        messageList.add(ReportingMessageImpl.fromEvent(this, event));
         return messageList;
     }
 
@@ -202,7 +205,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         Localytics.tagScreen(screenName);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
         messageList.add(
-                new ReportingMessage(this, ReportingMessage.MessageType.SCREEN_VIEW, System.currentTimeMillis(), eventAttributes)
+                new ReportingMessageImpl(this, ReportingMessageImpl.MessageType.SCREEN_VIEW, System.currentTimeMillis(), eventAttributes)
                         .setScreenName(screenName)
         );
         return messageList;
@@ -213,7 +216,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         int multiplier = trackAsRawLtv ? 1 : 100;
         Localytics.tagEvent(eventName, contextInfo, (long) valueIncreased.doubleValue() * multiplier);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(ReportingMessage.fromEvent(this, new MPEvent.Builder(eventName, MParticle.EventType.Transaction).info(contextInfo).build()));
+        messageList.add(ReportingMessageImpl.fromEvent(this, new MPEvent.Builder(eventName, MParticle.EventType.Transaction).info(contextInfo).build()));
         return messageList;
     }
 
@@ -231,7 +234,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
             }
             double total = event.getTransactionAttributes().getRevenue() * multiplier;
             Localytics.tagEvent(String.format("eCommerce - %s", event.getProductAction()), eventAttributes, (long) total);
-            messages.add(ReportingMessage.fromEvent(this, event));
+            messages.add(ReportingMessageImpl.fromEvent(this, event));
             return messages;
         }
         List<MPEvent> eventList = CommerceEventUtils.expand(event);
@@ -239,7 +242,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
             for (int i = 0; i < eventList.size(); i++) {
                 try {
                     logEvent(eventList.get(i));
-                    messages.add(ReportingMessage.fromEvent(this, event));
+                    messages.add(ReportingMessageImpl.fromEvent(this, event));
                 } catch (Exception e) {
                     Logger.warning("Failed to call tagEvent to Localytics kit: " + e.toString());
                 }
