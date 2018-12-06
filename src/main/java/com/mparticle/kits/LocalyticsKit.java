@@ -5,16 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
-import com.localytics.android.GcmListenerService;
 import com.localytics.android.Localytics;
 import com.localytics.android.ReferralReceiver;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Product;
-import com.mparticle.internal.ConfigManager;
-import com.mparticle.internal.MPUtility;
 import com.mparticle.internal.Logger;
+import com.mparticle.internal.MPUtility;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,14 +39,20 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     }
 
     @Override
-    protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
+    public List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
         try {
-            customDimensionJson = new JSONArray(getSettings().get(CUSTOM_DIMENSIONS));
+            customDimensionJson = new JSONArray(settings.get(CUSTOM_DIMENSIONS));
         } catch (Exception jse) {
 
         }
-        trackAsRawLtv = Boolean.parseBoolean(getSettings().get(RAW_LTV));
-        Localytics.autoIntegrate((Application)context.getApplicationContext(), getSettings().get(API_KEY));
+        trackAsRawLtv = Boolean.parseBoolean(settings.get(RAW_LTV));
+        Localytics.setOption("ll_app_key", settings.get(API_KEY));
+        Localytics.autoIntegrate((Application)context.getApplicationContext());
+
+        //after a reset() call, we need to set Provivacy OptedOut back to false, so the kit can run normally
+        if (Localytics.isPrivacyOptedOut() && !getKitManager().isOptedOut()) {
+            Localytics.setPrivacyOptedOut(false);
+        }
         Localytics.setLoggingEnabled(MParticle.getInstance().getEnvironment() == MParticle.Environment.Development);
         return null;
     }
@@ -250,17 +255,28 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
 
     @Override
     public boolean willHandlePushMessage(Intent intent) {
-        return intent.getExtras().containsKey("ll") &&
-                MPUtility.isInstanceIdAvailable() &&
-                KitUtils.isServiceAvailable(getContext(), GcmListenerService.class);
+        return (intent.getExtras().containsKey("ll") || intent.getExtras().containsKey("localyticsUninstallTrackingPush")) &&
+                MPUtility.isInstanceIdAvailable();
     }
 
     @Override
     public void onPushMessageReceived(Context context, Intent extras) {
-        Intent service = new Intent(context, com.localytics.android.GcmListenerService.class);
-        service.setAction("com.google.android.c2dm.intent.RECEIVE");
-        service.putExtras(extras);
-        context.startService(service);
+        Intent service;
+        switch (MPUtility.getAvailableInstanceId()) {
+            case FCM:
+                service = new Intent(context, com.localytics.android.FirebaseService.class);
+                service.setAction("com.google.firebase.MESSAGING_EVENT");
+                service.putExtras(extras);
+                context.startService(service);
+                break;
+            case GCM:
+                service = new Intent(context, com.localytics.android.GcmReceiver.class);
+                service.setAction("com.google.android.c2dm.intent.RECEIVE");
+                service.putExtras(extras);
+                context.startService(service);
+                break;
+        }
+
     }
 
     @Override
@@ -268,4 +284,10 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         Localytics.setPushRegistrationId(token);
         return true;
     }
+
+    @Override
+    public void reset() {
+        Localytics.setPrivacyOptedOut(true);
+    }
+
 }
