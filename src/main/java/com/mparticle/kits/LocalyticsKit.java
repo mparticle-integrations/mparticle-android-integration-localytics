@@ -256,25 +256,17 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     @Override
     public boolean willHandlePushMessage(Intent intent) {
         return (intent.getExtras().containsKey("ll") || intent.getExtras().containsKey("localyticsUninstallTrackingPush")) &&
-                MPUtility.isInstanceIdAvailable();
+                MPUtility.isFirebaseAvailable();
     }
 
     @Override
     public void onPushMessageReceived(Context context, Intent extras) {
         Intent service;
-        switch (MPUtility.getAvailableInstanceId()) {
-            case FCM:
-                service = new Intent(context, com.localytics.android.FirebaseService.class);
-                service.setAction("com.google.firebase.MESSAGING_EVENT");
-                service.putExtras(extras);
-                context.startService(service);
-                break;
-            case GCM:
-                service = new Intent(context, com.localytics.android.GcmReceiver.class);
-                service.setAction("com.google.android.c2dm.intent.RECEIVE");
-                service.putExtras(extras);
-                context.startService(service);
-                break;
+        if (MPUtility.isFirebaseAvailable()) {
+            service = new Intent(context, com.localytics.android.FirebaseService.class);
+            service.setAction("com.google.firebase.MESSAGING_EVENT");
+            service.putExtras(extras);
+            context.startService(service);
         }
 
     }
