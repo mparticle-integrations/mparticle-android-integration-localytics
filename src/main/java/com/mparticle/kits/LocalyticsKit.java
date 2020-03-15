@@ -4,7 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.support.annotation.NonNull;
 
+import com.localytics.android.CallToActionListener;
+import com.localytics.android.Campaign;
 import com.localytics.android.Localytics;
 import com.localytics.android.ReferralReceiver;
 import com.mparticle.MPEvent;
@@ -25,7 +28,7 @@ import java.util.Map;
 
 
 
-public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener {
+public class LocalyticsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, KitIntegration.AttributeListener, KitIntegration.PushListener, CallToActionListener {
     static final String API_KEY = "appKey";
     static final String CUSTOM_DIMENSIONS = "customDimensions";
     private static final String RAW_LTV = "trackClvAsRawValue";
@@ -50,9 +53,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         Localytics.autoIntegrate((Application)context.getApplicationContext());
 
         //after a reset() call, we need to set Provivacy OptedOut back to false, so the kit can run normally
-        if (Localytics.isPrivacyOptedOut() && !getKitManager().isOptedOut()) {
-            Localytics.setPrivacyOptedOut(false);
-        }
+        Localytics.setCallToActionListener(this);
         Localytics.setLoggingEnabled(MParticle.getInstance().getEnvironment() == MParticle.Environment.Development);
         return null;
     }
@@ -282,4 +283,25 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         Localytics.setPrivacyOptedOut(true);
     }
 
+    @Override
+    public boolean localyticsShouldDeeplink(@NonNull String s, @NonNull Campaign campaign) {
+        return false;
+    }
+
+    @Override
+    public void localyticsDidOptOut(boolean b, @NonNull Campaign campaign) {
+
+    }
+
+    @Override
+    public void localyticsDidPrivacyOptOut(boolean optedOut, @NonNull Campaign campaign) {
+        if (optedOut && !getKitManager().isOptedOut()) {
+            Localytics.setPrivacyOptedOut(false);
+        }
+    }
+
+    @Override
+    public boolean localyticsShouldPromptForLocationPermissions(@NonNull Campaign campaign) {
+        return false;
+    }
 }
