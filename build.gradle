@@ -25,6 +25,6 @@ repositories {
 }
 
 dependencies {
-    api 'com.localytics.android:library:5.7.0'
+    api 'com.localytics.android:library:6.0.1'
     testImplementation  files('libs/java-json.jar')
 }
