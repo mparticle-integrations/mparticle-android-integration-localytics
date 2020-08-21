@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    api 'com.localytics.android:library:6.0.1'
+    api 'com.localytics.android:library:6.1.0'
     compileOnly 'com.android.support:appcompat-v7:+'
     testImplementation  files('libs/java-json.jar')
 }
