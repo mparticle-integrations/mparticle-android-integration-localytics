@@ -8,7 +8,7 @@ This repository contains the [Localytics](https://www.localytics.com) integratio
 
     ```
     repositories {
-        maven { url 'http://maven.localytics.com/public' }
+        maven { url 'https://maven.localytics.com/public' }
         ...
     }
     ```
@@ -25,8 +25,8 @@ This repository contains the [Localytics](https://www.localytics.com) integratio
 
 ### Documentation
 
-[Localytics integration](http://docs.mparticle.com/?java#localytics)
+[Localytics integration](https://docs.mparticle.com/?java#localytics)
 
 ### License
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)

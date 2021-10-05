@@ -4,9 +4,9 @@ buildscript {
     }
 
     repositories {
-        google()
         mavenLocal()
-        jcenter()
+        google()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.mparticle:android-kit-plugin:' + project.version
@@ -21,7 +21,7 @@ android {
     }
 }
 repositories {
-    maven { url 'http://maven.localytics.com/public' }
+    maven { url 'https://maven.localytics.com/public' }
 }
 
 dependencies {
