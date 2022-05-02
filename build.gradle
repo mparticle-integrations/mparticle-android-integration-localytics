@@ -17,8 +17,10 @@ buildscript {
 apply plugin: 'com.mparticle.kit'
 
 android {
+    compileSdk 30
     defaultConfig {
-        minSdkVersion 17
+        minSdk 21
+        targetSdk 30
     }
 }
 repositories {
