@@ -188,11 +188,11 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
     @Override
     public List<ReportingMessage> logEvent(MPEvent event) {
         Double duration = event.getLength();
-        Map<String, String> info = event.getInfo();
+        Map<String, String> info = event.getCustomAttributeStrings();
 
         if (duration != null) {
             if (info == null) {
-                info = new HashMap<String, String>();
+                info = new HashMap<>();
             }
             info.put("event_duration", Double.toString(duration));
         }
@@ -219,7 +219,7 @@ public class LocalyticsKit extends KitIntegration implements KitIntegration.Even
         int multiplier = trackAsRawLtv ? 1 : 100;
         Localytics.tagEvent(eventName, contextInfo, (long) valueIncreased.doubleValue() * multiplier);
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(ReportingMessage.fromEvent(this, new MPEvent.Builder(eventName, MParticle.EventType.Transaction).info(contextInfo).build()));
+        messageList.add(ReportingMessage.fromEvent(this, new MPEvent.Builder(eventName, MParticle.EventType.Transaction).customAttributes(contextInfo).build()));
         return messageList;
     }
 
