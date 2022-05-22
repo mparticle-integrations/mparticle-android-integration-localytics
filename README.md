@@ -25,7 +25,7 @@ This repository contains the [Localytics](https://www.localytics.com) integratio
 
 ### Documentation
 
-[Localytics integration](https://docs.mparticle.com/?java#localytics)
+[Localytics integration](https://docs.mparticle.com/integrations/localytics/event/)
 
 ### License
 
