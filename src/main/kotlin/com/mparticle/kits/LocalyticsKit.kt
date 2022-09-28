@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import com.localytics.android.*
+import com.localytics.androidx.*
 import com.mparticle.MPEvent
 import com.mparticle.MParticle
 import com.mparticle.MParticle.IdentityType
@@ -301,6 +301,7 @@ class LocalyticsKit : KitIntegration(), KitIntegration.EventListener, CommerceLi
     }
 
     override fun localyticsShouldPromptForLocationPermissions(campaign: Campaign): Boolean = false
+    override fun localyticsShouldPromptForNotificationPermissions(campaign: Campaign): Boolean = false
 
     companion object {
         const val API_KEY = "appKey"
