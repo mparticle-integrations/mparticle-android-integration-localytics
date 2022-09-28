@@ -20,10 +20,10 @@ apply plugin: 'com.mparticle.kit'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 30
+    compileSdk 33
     defaultConfig {
         minSdk 21
-        targetSdk 30
+        targetSdk 33
     }
 }
 repositories {
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    api 'com.localytics.android:library:6.1.0'
+    api 'com.localytics.androidx:library:6.3.7'
     compileOnly 'androidx.appcompat:appcompat:1.5.1'
     testImplementation  files('libs/java-json.jar')
 }
