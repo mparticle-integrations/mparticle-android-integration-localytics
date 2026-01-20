@@ -8,7 +8,7 @@ import org.mockito.Mockito
 
 class LocalyticsKitTests {
     private val kit: KitIntegration
-         get() = LocalyticsKit()
+        get() = LocalyticsKit()
 
     @Test
     @Throws(Exception::class)
